@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #
-# Brainfuck Interpreter
+# Emojy Interpreter
 # Copyright 2011 Sebastian Kaspari
 #
-# Usage: ./brainfuck.py [FILE]
+# Usage: ./emojy.py [FILE]
 
 import sys
 import getch
