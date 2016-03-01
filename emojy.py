@@ -6,20 +6,16 @@
 # Usage: ./emojy.py [FILE]
 
 import sys
-import getch
 from translations import translation
+import readchar
 def execute(filename):
-  f = open(filename, "r")
-  evaluate(f.read())
-  f.close()
+  with open(filename, "r") as f:
+    evaluate(f.read())
 
 def evaluate(code):
-  commands = ""
-  for char in code:
-    if char in translation:
-      commands += translation[char]
+  commands = [translation[char] for char in code if char in translation]
 
-  code = list(commands)
+  code = commands
   bracemap = buildbracemap(code)
 
   cells, codeptr, cellptr = [0], 0, 0
@@ -43,7 +39,7 @@ def evaluate(code):
     if command == "[" and cells[cellptr] == 0: codeptr = bracemap[codeptr]
     if command == "]" and cells[cellptr] != 0: codeptr = bracemap[codeptr]
     if command == ".": sys.stdout.write(chr(cells[cellptr]))
-    if command == ",": cells[cellptr] = ord(getch.getch())
+    if command == ",": cells[cellptr] = ord(readchar.readchar())
       
     codeptr += 1
 
