@@ -1,68 +1,87 @@
 #!/usr/bin/python
-#
-# Emojy Interpreter
-# Copyright 2011 Sebastian Kaspari
-#
-# Usage: ./emojy.py [FILE]
 
-import sys
 from translations import translation
-import readchar
-def execute(filename):
-  with open(filename, "r") as f:
-    evaluate(f.read())
 
-def evaluate(code):
-  commands = [translation[char] for char in code if char in translation]
+class Emojy():
+    def __init__(self, pyinput, size=30000):
+        self.size = size
+        self.pyinput = pyinput
+        if self.pyinput:
+            self.input_cache = []
+    def readchar(self):
+        if self.pyinput:
+            while len(self.input_cache) == 0:
+                self.input_cache = list(str(input()))
+            p = self.input_cache.pop(0)
+            return p
+        else:
+            import readchar
+            return readchar.readchar()
+    def execute(self, code):
+        commands = [translation[char] for char in code if char in translation]
 
-  code = commands
-  bracemap = buildbracemap(code)
+        code = commands
+        bracemap = self.buildbracemap(code)
 
-  cells, codeptr, cellptr = [0], 0, 0
+        cells, codeptr, cellptr = [0]*self.size, 0, 0
 
-  while codeptr < len(code):
-    command = code[codeptr]
+        while codeptr < len(code):
+            command = code[codeptr]
 
-    if command == ">":
-      cellptr += 1
-      if cellptr == len(cells): cells.append(0)
+            if command == ">":
+                cellptr += 1
 
-    if command == "<":
-      cellptr = 0 if cellptr <= 0 else cellptr - 1
+            if command == "<":
+                cellptr = 0 if cellptr <= 0 else cellptr - 1
 
-    if command == "+":
-      cells[cellptr] = cells[cellptr] + 1 if cells[cellptr] < 255 else 0
+            if command == "+":
+                cells[cellptr] = cells[cellptr] + 1 if cells[cellptr] < 255 else 0
 
-    if command == "-":
-      cells[cellptr] = cells[cellptr] - 1 if cells[cellptr] > 0 else 255
+            if command == "-":
+                cells[cellptr] = cells[cellptr] - 1 if cells[cellptr] > 0 else 255
 
-    if command == "[" and cells[cellptr] == 0: codeptr = bracemap[codeptr]
-    if command == "]" and cells[cellptr] != 0: codeptr = bracemap[codeptr]
-    if command == ".": sys.stdout.write(chr(cells[cellptr]))
-    if command == ",": cells[cellptr] = ord(readchar.readchar())
-      
-    codeptr += 1
-
-
-def cleanup(code):
-  return list(filter(lambda x: x in ['.', ',', '[', ']', '<', '>', '+', '-'], code))
-
-
-def buildbracemap(code):
-  temp_bracestack, bracemap = [], {}
-
-  for position, command in enumerate(code):
-    if command == "[": temp_bracestack.append(position)
-    if command == "]":
-      start = temp_bracestack.pop()
-      bracemap[start] = position
-      bracemap[position] = start
-  return bracemap
+            if command == "[" and cells[cellptr] == 0:
+                codeptr = bracemap[codeptr]
+            if command == "]" and cells[cellptr] != 0:
+                codeptr = bracemap[codeptr]
+            if command == ".":
+                print(chr(cells[cellptr]), end="")
+            if command == ",":
+                cells[cellptr] = ord(self.readchar())
+                
+            codeptr += 1
 
 
-def main():
-  if len(sys.argv) == 2: execute(sys.argv[1])
-  else: print("Usage:", sys.argv[0], "filename")
+    def buildbracemap(self, code):
+        temp_bracestack, bracemap = [], {}
 
-if __name__ == "__main__": main()
+        for position, command in enumerate(code):
+            if command == "[": temp_bracestack.append(position)
+            if command == "]":
+                start = temp_bracestack.pop()
+                bracemap[start] = position
+                bracemap[position] = start
+        return bracemap
 
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(description='Emojy interpreter')
+    parser.add_argument('files', metavar='file', type=str, default=["-"],
+                       nargs='*', help='the path to the emojy code file, default is "-" for stdin')
+    parser.add_argument('--pyinput', dest="pyinput", help='use pythons input function instead of readchar', action='store_true')
+    args = parser.parse_args()
+
+    for file in args.files:
+        if file == "-":
+            emfile = sys.stdin
+        else:
+            emfile = open(file)
+
+        emojy = Emojy(args.pyinput)
+        emojy.execute(emfile.read())
+
+
+        emfile.close()
