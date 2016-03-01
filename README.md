@@ -6,15 +6,16 @@ A brainfuck dialect using emojis. Based on (pocmos brainfuck imprementation in p
 
 It uses the follwing mapping:
 
-|Brainfuck command|Emoji|
-|+|👍|
-|-|👎|
-|>|🖕|
-|<|👇|
-|.|👄|
-|,|👂|
-|[|🔁|
-|]|🔚|
+| Brainfuck command | Emoji |
+|-------------------|-------|
+| +                 | 👍    |
+| -                 | 👎    |
+| >                 | 🖕    |
+| <                 | 👇    |
+| ,                 | 👄    |
+| .                 | 👂    |
+| [                 | 🔁    |
+| ]                 | 🔚    |
 
 ## Example Scripts
 
