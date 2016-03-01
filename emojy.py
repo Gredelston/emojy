@@ -8,6 +8,7 @@ class Emojy():
         self.pyinput = pyinput
         if self.pyinput:
             self.input_cache = []
+
     def readchar(self):
         if self.pyinput:
             while len(self.input_cache) == 0:
@@ -17,6 +18,7 @@ class Emojy():
         else:
             import readchar
             return readchar.readchar()
+
     def execute(self, code):
         commands = [translation[char] for char in code if char in translation]
 
@@ -50,7 +52,6 @@ class Emojy():
                 cells[cellptr] = ord(self.readchar())
                 
             codeptr += 1
-
 
     def buildbracemap(self, code):
         temp_bracestack, bracemap = [], {}
