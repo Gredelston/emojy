@@ -11,7 +11,7 @@ class Emojy():
     def readchar(self):
         if self.pyinput:
             while len(self.input_cache) == 0:
-                self.input_cache = list(str(input()))
+                self.input_cache = list(str(input("\n:")))
             p = self.input_cache.pop(0)
             return p
         else:
